@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>HTML5 Canvas</title>
+  <style>
+    body{
+      cursor:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'  width='50' height='60' viewport='0 0 100 100' style='fill:black;font-size:30px;'><text y='50%'>🖍</text></svg>") 16 0,auto; /*emojicursor.app*/
+    }
+  </style>
+</head>
+<body>
+<canvas id="draw" width="800" height="800"></canvas>
+<script>
+  const canvas = document.querySelector('#draw');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  // this is the color it starts on
+  ctx.lineJoin = 'round';
+  ctx.lineCap = 'round';
+  // ctx.globalCompositeOperation = 'difference'; test out blending modes
+
+  let isDrawing = false;
+  let lastX = 0 -50;
+  let lastY = 0 +60;
+  let hue = 0;
+  let direction = true;
+
+  function draw(e) {
+    if(!isDrawing) return; //stop the function from running when they're not moused down
+    ctx.strokeStyle = `hsl(${hue}, 100%, 80%)`;
+    ctx.beginPath();
+    // start from
+    ctx.moveTo(lastX -50, lastY +60);
+    // go to
+    ctx.lineTo(e.offsetX -50, e.offsetY +60);
+    ctx.stroke();
+    [lastX, lastY] = [e.offsetX, e.offsetY];
+
+    hue++;
+    if(hue >= 360) {
+      hue = 0;
+    }
+    if(ctx.lineWidth >= 100 || ctx.lineWidth <= 1) {
+      direction = !direction;
+    }
+
+    if(direction) {
+      ctx.lineWidth++;
+    }
+    else{
+      ctx.lineWidth--;
+    }
+  }
+
+  canvas.addEventListener('mousedown', (e) => {
+    isDrawing = true;
+    // as soon as the person clicks down their mouse to start it, before we do a mousemove, update lastx and lasty
+    [lastX, lastY] = [e.offsetX, e.offsetY];
+  });
+
+  canvas.addEventListener('mousemove', draw);
+  canvas.addEventListener('mouseup', () => isDrawing = false);
+  canvas.addEventListener('mouseout', () => isDrawing = false);
+
+</script>
+
+<style>
+  html, body {
+    margin: 0;
+  }
+</style>
+
+</body>
+</html>
